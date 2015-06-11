@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html ng-app="myServices">
+
+  <head>
+  
+    <title>Cordova AngularJS/PHP/MySQL Distance Sorter</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--<script type="text/javascript" charset="utf-8" src="cordova.js"></script>-->
+        <script src="js/angular.min.js"></script>
+
+    <script type="text/javascript" charset="utf-8">
+	
+	var mylat;
+	var mylng;
+	
+    // Wait for device API libraries to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // device APIs are available
+    //
+    function onDeviceReady() {
+		//first set location
+        navigator.geolocation.getCurrentPosition(onSuccess, onError);
+    }
+	
+
+    // onSuccess Geolocation
+    //
+    function onSuccess(position) {
+		mylat = position.coords.latitude;
+		mylng = position.coords.longitude;
+    }
+
+    // onError Callback receives a PositionError object
+    //
+    function onError(error) {
+        alert('code: '    + error.code    + '\n' +
+              'message: ' + error.message + '\n');
+    }	
+    </script>
+  </head>
+  <body>
+    
+    <div ng-controller="servicesCntrl">
+    <table border="2" cellpadding="10" cellspacing="10">
+    
+        <tr ng-repeat="x in names  | orderBy:sort" ng-cloak>
+        <td>{{x.name}}</td>
+        <td>{{x.distance}}</td>
+        </tr>
+        </table>
+    </div>
+</div>
+<script>
+//Replace with coordinates grabbed from Cordova - just putting this in for debugging purposes;
+var mylat = 28.681638;
+var mylng = -81.390225;
+
+var app = angular.module("myServices", []);
+app.controller("servicesCntrl", function($scope, $http) {
+	$scope.sort= "distance";
+    $http.get("results.php?lat="+mylat+"&lng="+mylng)
+    .success(function(response) {$scope.names = response.values;});
+});</script>
+
+  </body>
+</html>
